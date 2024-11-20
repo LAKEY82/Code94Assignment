@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { HiSearch } from 'react-icons/hi'; // Using search icon from react-icons
-
+import { SearchNormal1,HambergerMenu } from 'iconsax-react';
+import logo from '../assets/img.png';
 const Tasks = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
 
@@ -15,7 +15,7 @@ const Tasks = () => {
 
         {/* Search Bar */}
         <div className="flex items-center bg-white border border-gray-300 rounded-lg p-2 w-96">
-          <HiSearch className="text-gray-500 w-5 h-5 mr-2" />
+          <SearchNormal1 className="text-gray-500 w-5 h-5 mr-2" />
           <input
             type="text"
             value={searchTerm}
@@ -24,6 +24,12 @@ const Tasks = () => {
             className="bg-white outline-none w-full text-black"
           />
         </div>
+        <div className="bg-white border-2 border-gray-100 rounded-full p-2 flex items-center">
+  <HambergerMenu size="32" color="#555555" />
+  <img src={logo} alt="Code94 Labs Logo" className="w-8 h-8 ml-4" />
+</div>
+
+
       </div>
 
       {/* Main Content Section (Below Top Bar) */}
