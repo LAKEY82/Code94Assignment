@@ -12,6 +12,7 @@ interface Task {
     priority: string;
     user: string;
     status: 'todo' | 'inProgress' | 'completed'; // Added status field
+    description: string; // Added description field
 }
 
 
@@ -34,13 +35,20 @@ const Tasks: React.FC = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false); // State for dropdown visibility
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
-const handleCheckboxClick = (task: Task) => {
-    setSelectedTask(task); // Open the details panel with the selected task
-};
+    const handleCheckboxClick = (task: Task) => {
+        setSelectedTask(task); // Open the details panel with the selected task
+    };
 
-const handleCloseDetails = () => {
-    setSelectedTask(null); // Close the details panel
-};
+    const handleCloseDetails = () => {
+        setSelectedTask(null); // Close the details panel
+    };
+
+    const deleteTask = (column: keyof TaskState, id: number) => {
+        setTasks((prev) => ({
+            ...prev,
+            [column]: prev[column].filter((task) => task.id !== id),  // **Deletes the task by filtering it out**
+        }));
+    };
 
 
     // Add a new task card
@@ -102,7 +110,13 @@ const handleCloseDetails = () => {
                 />
             </div>
             {selectedTask && (
-    <TaskDetails task={selectedTask} onClose={handleCloseDetails} />
+    <TaskDetails
+    task={selectedTask}
+    onClose={handleCloseDetails}
+    handleTaskChange={handleTaskChange}
+    column={column}
+    deleteTask={deleteTask}  // **Passing deleteTask prop**
+/>
 )}
 
 

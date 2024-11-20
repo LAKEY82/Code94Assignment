@@ -1,4 +1,4 @@
-import { ArrowRight, Trash,Calendar, User, Flag } from 'iconsax-react';
+import { ArrowRight, Trash, Calendar, User, Flag, DocumentText } from 'iconsax-react';
 import React from 'react';
 
 interface Task {
@@ -7,20 +7,23 @@ interface Task {
     date: string;
     priority: string;
     user: string;
+    description: string; // Added description field
 }
 
 interface TaskDetailsProps {
-    task: Task | null;
+    task: Task;
     onClose: () => void;
+    handleTaskChange: (column: string, id: number, field: string, value: string) => void;
+    column: string;
+    deleteTask: (column: string, id: number) => void;  // **New prop to handle task deletion**
 }
-
-const TaskDetails: React.FC<TaskDetailsProps> = ({ task, onClose }) => {
+const TaskDetails: React.FC<TaskDetailsProps> = ({ task, onClose, handleTaskChange, column, deleteTask }) => {
     if (!task) return null;
 
     return (
         <div className="fixed top-0 right-0 w-1/3 h-full bg-white shadow-lg p-6 z-50 transition-transform transform translate-x-0">
             {/* Header Section */}
-            <div className="flex items-center justify-between w-full mb-4"> {/* Margin bottom added */}
+            <div className="flex items-center justify-between w-full mb-4">
                 {/* Left-Aligned Button */}
                 <button className="flex items-center px-4 py-2 border rounded-lg shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-100">
                     <span className="mr-2">
@@ -44,7 +47,7 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ task, onClose }) => {
 
                 {/* Right-Aligned Icons */}
                 <div className="flex items-center gap-4">
-                    <Trash size="32" color="#555555" />
+                    <Trash size="32" onClick={() => deleteTask(column, task.id)} color="#555555" />
                     <ArrowRight
                         onClick={onClose}
                         size="32"
@@ -63,22 +66,21 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ task, onClose }) => {
             <div className="pt-6">
                 {/* Due Date */}
                 <div className="mb-4 flex items-center gap-x-[10px]">
-                <Calendar size="18" color="#555555"/>
-    <p className="text-sm text-gray-500 mr-2 ]">Due Date</p>
-    <p className="text-lg font-semibold text-blue-700 ml-[70px]">
-        {new Date(task.date).toLocaleDateString('en-US', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-        })}
-    </p>
-</div>
+                    <Calendar size="18" color="#555555" />
+                    <p className="text-sm text-gray-500 mr-2">Due Date</p>
+                    <p className="text-lg font-semibold text-blue-700 ml-[70px]">
+                        {new Date(task.date).toLocaleDateString('en-US', {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric',
+                        })}
+                    </p>
+                </div>
 
-
-                 {/* Assigned User */}
-                 <div className='mb-4 flex items-center gap-x-[10px]' >
-                 <User size="16" color="#555555"/>
-                    <p className="text-sm text-gray-500 ">Assigned User</p>
+                {/* Assigned User */}
+                <div className="mb-4 flex items-center gap-x-[10px]">
+                    <User size="16" color="#555555" />
+                    <p className="text-sm text-gray-500">Assigned User</p>
                     <p className="text-lg font-semibold ml-[54px]">
                         {task.user === 'user1' ? 'User 1' : 'User 2'}
                     </p>
@@ -86,14 +88,27 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ task, onClose }) => {
 
                 {/* Priority */}
                 <div className="mb-4 flex items-center gap-x-[10px]">
-                <Flag size="22" color="#555555"/>
+                    <Flag size="22" color="#555555" />
                     <p className="text-sm text-gray-500">Priority</p>
                     <p className="text-lg font-semibold ml-[88px]">
                         {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
                     </p>
                 </div>
 
-               
+                {/* Description Section */}
+                <div className="mb-4 flex items-center gap-x-[10px] pt-[40px]">
+                    <DocumentText size="18" color="#555555" />
+                    <p className="text-sm text-gray-500">Description</p>
+                </div>
+
+                {/* Description Textarea */}
+                <textarea
+                    className="w-full p-2 border border-gray-300 rounded-lg resize-none"
+                    placeholder="Enter description here..."
+                    rows={4}
+                    value={task.description}
+                    onChange={(e) => handleTaskChange(column, task.id, 'description', e.target.value)} // Update the description
+                />
             </div>
         </div>
     );
