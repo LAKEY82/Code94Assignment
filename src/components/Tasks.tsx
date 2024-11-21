@@ -4,6 +4,7 @@ import logo from '../assets/img.png';
 import user1Image from '../assets/user.png'; // Replace with your actual image path
 import user2Image from '../assets/lp.jpeg'; // Replace with your actual image path
 import TaskDetails from '../components/TaskDetails'
+import ConfirmationModal from './ConfirmationModal';
 
 interface Task {
     id: number;
@@ -34,6 +35,8 @@ const Tasks: React.FC = () => {
     const [isDateSelected, setIsDateSelected] = useState<boolean>(false);  // New state to track date selection
     const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false); // State for dropdown visibility
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+    const [showModal, setShowModal] = useState(false);
+    const [taskToDelete, setTaskToDelete] = useState<{ column: keyof TaskState, id: number } | null>(null);
 
     const handleCheckboxClick = (task: Task) => {
         setSelectedTask(task); // Open the details panel with the selected task
@@ -43,12 +46,29 @@ const Tasks: React.FC = () => {
         setSelectedTask(null); // Close the details panel
     };
 
-    const deleteTask = (column: keyof TaskState, id: number) => {
-        setTasks((prev) => ({
-            ...prev,
-            [column]: prev[column].filter((task) => task.id !== id),  // **Deletes the task by filtering it out**
-        }));
+  
+
+    const handleDeleteClick = (column: keyof TaskState, id: number) => {
+        setTaskToDelete({ column, id });
+        setShowModal(true);
     };
+
+    const confirmDelete = () => {
+        if (taskToDelete) {
+            setTasks((prev) => ({
+                ...prev,
+                [taskToDelete.column]: prev[taskToDelete.column].filter((task) => task.id !== taskToDelete.id),
+            }));
+            setShowModal(false);
+            setTaskToDelete(null);
+        }
+    };
+
+    const cancelDelete = () => {
+        setShowModal(false);
+        setTaskToDelete(null);
+    };
+
 
 
     // Add a new task card
@@ -111,12 +131,12 @@ const Tasks: React.FC = () => {
             </div>
             {selectedTask && (
     <TaskDetails
-    task={selectedTask}
-    onClose={handleCloseDetails}
-    handleTaskChange={handleTaskChange}
-    column={column}
-    deleteTask={deleteTask}  // **Passing deleteTask prop**
-/>
+                    task={selectedTask}
+                    onClose={handleCloseDetails}
+                    handleTaskChange={handleTaskChange}
+                    column={column}
+                    deleteTask={handleDeleteClick} // Use handleDeleteClick here
+                />
 )}
 
 
@@ -308,6 +328,14 @@ const Tasks: React.FC = () => {
                     </div>
                 </div>
             </div>
+            {/* Confirmation Modal */}
+            {showModal && (
+                <ConfirmationModal
+                    message="This will permanently delete the selected task. These items will no longer be accessible to you. This action is irreversible."
+                    onConfirm={confirmDelete}
+                    onCancel={cancelDelete}
+                />
+            )}
         </div>
     );
 };

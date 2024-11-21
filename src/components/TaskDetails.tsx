@@ -15,10 +15,18 @@ interface TaskDetailsProps {
     onClose: () => void;
     handleTaskChange: (column: string, id: number, field: string, value: string) => void;
     column: string;
-    deleteTask: (column: string, id: number) => void;  // **New prop to handle task deletion**
+    deleteTask: (column: string, id: number) => void;
 }
+
 const TaskDetails: React.FC<TaskDetailsProps> = ({ task, onClose, handleTaskChange, column, deleteTask }) => {
     if (!task) return null;
+
+    const handleDeleteClick = () => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this task?");
+        if (confirmDelete) {
+            deleteTask(column, task.id);
+        }
+    };
 
     return (
         <div className="fixed top-0 right-0 w-1/3 h-full bg-white shadow-lg p-6 z-50 transition-transform transform translate-x-0">
@@ -47,7 +55,7 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ task, onClose, handleTaskChan
 
                 {/* Right-Aligned Icons */}
                 <div className="flex items-center gap-4">
-                    <Trash size="32" onClick={() => deleteTask(column, task.id)} color="#555555" />
+                    <Trash size="32" onClick={() => deleteTask(column, task.id)}  color="#555555" />
                     <ArrowRight
                         onClick={onClose}
                         size="32"
