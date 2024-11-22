@@ -88,7 +88,7 @@ const Tasks: React.FC = () => {
         }));
     };
 
-    const handleTaskChange = (
+    const handleTaskChange:any = (
         column: keyof TaskState,
         id: number,
         field: keyof Task,
@@ -109,10 +109,10 @@ const Tasks: React.FC = () => {
         return new Date(date).toLocaleDateString('en-US', options);
     };
 
-    const calculateDueDateMessage = (dueDate) => {
-        const currentDate = new Date();
+    const calculateDueDateMessage = (dueDate:any) => {
+        const currentDate:any = new Date();
         const taskDate = new Date(dueDate);
-        const timeDifference = taskDate - currentDate;
+        const timeDifference = taskDate as any - currentDate;
         const dayDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
     
         if (dayDifference > 0) {
@@ -150,7 +150,7 @@ const Tasks: React.FC = () => {
                     onClose={handleCloseDetails}
                     handleTaskChange={handleTaskChange}
                     column={column}
-                    deleteTask={handleDeleteClick} // Use handleDeleteClick here
+                    deleteTask={handleDeleteClick as any} // Use handleDeleteClick here
                 />
             )}
     
