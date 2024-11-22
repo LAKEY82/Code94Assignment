@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SearchNormal1, HambergerMenu, RecordCircle, Add, Calendar } from 'iconsax-react';
+import { SearchNormal1, HambergerMenu, RecordCircle, Add, Calendar, Clock } from 'iconsax-react';
 import logo from '../assets/img.png';
 import user1Image from '../assets/user.png'; // Replace with your actual image path
 import user2Image from '../assets/lp.jpeg'; // Replace with your actual image path
@@ -12,7 +12,7 @@ interface Task {
     date: string;
     priority: string;
     user: string;
-    status: 'todo' | 'inProgress' | 'completed'; // Added status field
+    tasks: string; // Added status field
     description: string; // Added description field
 }
 
@@ -109,16 +109,31 @@ const Tasks: React.FC = () => {
         return new Date(date).toLocaleDateString('en-US', options);
     };
 
+    const calculateDueDateMessage = (dueDate) => {
+        const currentDate = new Date();
+        const taskDate = new Date(dueDate);
+        const timeDifference = taskDate - currentDate;
+        const dayDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+    
+        if (dayDifference > 0) {
+            return `Should complete in ${dayDifference} days`;
+        } else if (dayDifference < 0) {
+            return `Should've completed ${Math.abs(dayDifference)} days ago`;
+        } else {
+            return '';
+        }
+    };
+    
+
     const renderTaskCard = (column: keyof TaskState, task: Task) => (
         <div key={task.id} className="bg-white p-4 rounded-lg mt-4 shadow-md">
             {/* Task Name Input */}
             <div className="flex items-center">
-            <input
-    type="checkbox"
-    className="w-5 h-5 mr-3 rounded-full appearance-none border-2 border-gray-400 checked:bg-blue-500 checked:border-blue-500"
-    onClick={() => handleCheckboxClick(task)} // Show task details on click
-/>
-
+                <input
+                    type="checkbox"
+                    className="w-5 h-5 mr-3 rounded-full appearance-none border-2 border-gray-400 checked:bg-blue-500 checked:border-blue-500"
+                    onClick={() => handleCheckboxClick(task)} // Show task details on click
+                />
                 <input
                     type="text"
                     placeholder="Write a task name"
@@ -130,18 +145,17 @@ const Tasks: React.FC = () => {
                 />
             </div>
             {selectedTask && (
-    <TaskDetails
+                <TaskDetails
                     task={selectedTask}
                     onClose={handleCloseDetails}
                     handleTaskChange={handleTaskChange}
                     column={column}
                     deleteTask={handleDeleteClick} // Use handleDeleteClick here
                 />
-)}
-
-
+            )}
+    
             {/* Dropdowns and Calendar */}
-            <div className="flex justify-between items-center mt-4">
+            <div className="flex justify-between items-center mt-4 pb-4">
                 {/* Profile Dropdown with User Image */}
                 <div className="relative border border-dashed border-gray-300 rounded-full p-2 bg-white flex items-center">
                     <div className="cursor-pointer" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
@@ -158,7 +172,7 @@ const Tasks: React.FC = () => {
                             )}
                         </div>
                     </div>
-
+    
                     {/* Dropdown List, hidden by default */}
                     {isDropdownOpen && (
                         <div className="absolute top-12 left-0 bg-white shadow-lg rounded-lg w-full">
@@ -193,7 +207,7 @@ const Tasks: React.FC = () => {
                         </div>
                     )}
                 </div>
-
+    
                 {/* Calendar Icon and Date */}
                 <div className="relative border border-dashed border-gray-300 rounded-full p-2 bg-white flex items-center justify-center">
                     {isDateSelected ? (
@@ -220,22 +234,29 @@ const Tasks: React.FC = () => {
                         </>
                     )}
                 </div>
-
+    
                 {/* Priority Dropdown */}
                 <select
-                    value={task.priority}
-                    onChange={(e) => handleTaskChange(column, task.id, 'priority', e.target.value)}
-                    className={`border border-gray-300 rounded-lg p-2 text-gray-700 
-                        ${task.priority === 'low' ? 'text-blue-500' : task.priority === 'medium' ? 'text-yellow-500' : task.priority === 'high' ? 'text-red-500' : ''}`}
-                >
-                    <option value="">Set priority</option>
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                </select>
+    value={task.priority}
+    onChange={(e) => handleTaskChange(column, task.id, 'priority', e.target.value)}
+    className={`border border-gray-300 rounded-lg p-2 text-gray-700 ${task.priority === 'low' ? 'text-blue-500' : task.priority === 'medium' ? 'text-yellow-500' : task.priority === 'high' ? 'text-red-500' : ''}`}
+>
+    <option value="">Set priority</option>
+    <option value="low" className="text-blue-500">Low</option>
+    <option value="medium" className="text-yellow-500">Medium</option>
+    <option value="high" className="text-red-500">High</option>
+</select>
+
+            </div>
+    
+            {/* Due Date Message */}
+            <div className="mt-2 text-gray-500 flex flex-row text-sm pt-[20px] items-center border-t">
+            <Clock className='pr-2' size="22" color="#555555"/>
+                {calculateDueDateMessage(task.date)}
             </div>
         </div>
     );
+    
 
     return (
         <div className="flex flex-col h-screen">
@@ -264,33 +285,38 @@ const Tasks: React.FC = () => {
             <div className="flex flex-1 bg-[#F6F6F6] p-6 space-x-6">
                 {/* Todo Column */}
                 <div className="bg-[#F6F6F6] rounded-lg border-dashed border-2 border-gray-300 w-1/3 p-4">
-                    <div className="flex items-center bg-white h-[50px] rounded-lg justify-between gap-x-[10px]">
-                        <div className="flex items-center gap-x-5">
-                            <RecordCircle className="pl-5" size="42" color="#ffad0d" variant="Bold" />
-                            <span className="text-black font-bold">Todo</span>
-                            <span className="text-blue-500 pl-2 pr-2 bg-[#F2F6FD] rounded-full">
-                                {tasks.todo.length}
-                            </span>
-                        </div>
-                        <Add
-                            className="mr-2 cursor-pointer"
-                            size="32"
-                            color="#555555"
-                            onClick={() => handleAddTask('todo')}
-                        />
-                    </div>
-                    <div className="mt-6">
-                        {tasks.todo.map((task) => renderTaskCard('todo', task))}
-                    </div>
-                </div>
+        <div className="flex items-center bg-white h-[50px] rounded-lg justify-between gap-x-[10px]">
+            <div className="flex items-center gap-x-5">
+                <RecordCircle className="pl-5" size="42" color="#ffad0d" variant="Bold" />
+                <span className="text-black font-bold">Todo</span>
+                <span className="text-blue-500 pl-2 pr-2 bg-[#F2F6FD] rounded-full">
+                    {tasks.todo.length}
+                </span>
+            </div>
+            <Add
+                className="mr-2 cursor-pointer"
+                size="32"
+                color="#555555"
+                onClick={() => handleAddTask('todo')}
+            />
+        </div>
+        <div className="mt-6">
+            {tasks.todo.map((task) => renderTaskCard('todo', task))}
+        </div>
+        <div className="flex justify-center mt-6">
+            <span className="text-gray-500 cursor-pointer" onClick={() => handleAddTask('todo')}>
+                + Add Task
+            </span>
+        </div>
+    </div>
 
                 {/* In Progress Column */}
                 <div className="bg-[#F6F6F6] rounded-lg border-dashed border-2 border-gray-300 w-1/3 p-4">
                     <div className="flex items-center bg-white h-[50px] rounded-lg justify-between gap-x-[10px]">
                         <div className="flex items-center gap-x-5">
-                            <RecordCircle className="pl-5" size="42" color="#ffa500" variant="Bold" />
+                            <RecordCircle className="pl-5" size="42" color="#0C6FBF" variant="Bold" />
                             <span className="text-black font-bold">In Progress</span>
-                            <span className="text-blue-500 pl-2 pr-2 bg-[#F2F6FD] rounded-full">
+                            <span className="text-gray-500 pl-2 pr-2 bg-[#F2F6FD] rounded-full">
                                 {tasks.inProgress.length}
                             </span>
                         </div>
@@ -304,6 +330,11 @@ const Tasks: React.FC = () => {
                     <div className="mt-6">
                         {tasks.inProgress.map((task) => renderTaskCard('inProgress', task))}
                     </div>
+                    <div className="flex justify-center mt-6">
+            <span className="text-gray-500 cursor-pointer" onClick={() => handleAddTask('inProgress')}>
+                + Add Task
+            </span>
+        </div>
                 </div>
 
                 {/* Completed Column */}
@@ -326,6 +357,11 @@ const Tasks: React.FC = () => {
                     <div className="mt-6">
                         {tasks.completed.map((task) => renderTaskCard('completed', task))}
                     </div>
+                    <div className="flex justify-center mt-6">
+            <span className="text-gray-500 cursor-pointer" onClick={() => handleAddTask('completed')}>
+                + Add Task
+            </span>
+        </div>
                 </div>
             </div>
             {/* Confirmation Modal */}

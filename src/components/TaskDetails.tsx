@@ -1,4 +1,4 @@
-import { ArrowRight, Trash, Calendar, User, Flag, DocumentText } from 'iconsax-react';
+import { ArrowRight, Trash, Calendar, User, Flag, DocumentText, RecordCircle } from 'iconsax-react';
 import React from 'react';
 
 interface Task {
@@ -7,7 +7,8 @@ interface Task {
     date: string;
     priority: string;
     user: string;
-    description: string; // Added description field
+    tasks: string;
+    description: string;
 }
 
 interface TaskDetailsProps {
@@ -55,7 +56,7 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ task, onClose, handleTaskChan
 
                 {/* Right-Aligned Icons */}
                 <div className="flex items-center gap-4">
-                    <Trash size="32" onClick={() => deleteTask(column, task.id)}  color="#555555" />
+                    <Trash size="32" onClick={handleDeleteClick} color="#555555" />
                     <ArrowRight
                         onClick={onClose}
                         size="32"
@@ -70,8 +71,24 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ task, onClose, handleTaskChan
                 {task.name || 'Task Details'}
             </h2>
 
+            {/* Task Status */}
+            <div className="mb-4 flex items-center ">
+            <RecordCircle size="22" color="#555555"/>
+                <p className="text-sm pl-[10px] text-gray-500">Status</p>
+                <p className="text-lg font-semibold ml-[104px]">
+                    {task.tasks === 'todo' ? 'To Do' : task.tasks === 'inProgress' ? task.tasks : 'Completed'}
+                </p>
+            </div>
+            {/* <div className="mb-4 flex items-center gap-x-[10px]">
+                    <User size="16" color="#555555" />
+                    <p className="text-sm text-gray-500">Assigned User</p>
+                    <p className="text-lg font-semibold ml-[54px]">
+                        {task.user === 'user1' ? 'User 1' : 'User 2'}
+                    </p>
+                </div> */}
+
             {/* Task Details Section */}
-            <div className="pt-6">
+            <div className="pt-2">
                 {/* Due Date */}
                 <div className="mb-4 flex items-center gap-x-[10px]">
                     <Calendar size="18" color="#555555" />
@@ -96,12 +113,19 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ task, onClose, handleTaskChan
 
                 {/* Priority */}
                 <div className="mb-4 flex items-center gap-x-[10px]">
-                    <Flag size="22" color="#555555" />
-                    <p className="text-sm text-gray-500">Priority</p>
-                    <p className="text-lg font-semibold ml-[88px]">
-                        {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
-                    </p>
-                </div>
+    <Flag size="22" color="#555555" />
+    <p className="text-sm text-gray-500">Priority</p>
+    <p
+        className={`text-lg font-semibold ml-[88px] ${
+            task.priority === 'low' ? 'text-blue-500' :
+            task.priority === 'medium' ? 'text-yellow-500' :
+            task.priority === 'high' ? 'text-red-500' : ''
+        }`}
+    >
+        {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
+    </p>
+</div>
+
 
                 {/* Description Section */}
                 <div className="mb-4 flex items-center gap-x-[10px] pt-[40px]">
