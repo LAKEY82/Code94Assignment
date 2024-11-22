@@ -1,5 +1,4 @@
 import { ArrowRight, Trash, Calendar, User, Flag, DocumentText, RecordCircle } from 'iconsax-react';
-import React from 'react';
 
 interface Task {
     id: number;

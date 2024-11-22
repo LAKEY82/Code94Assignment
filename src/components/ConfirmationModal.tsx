@@ -1,5 +1,5 @@
 import { CloseCircle } from 'iconsax-react';
-import React from 'react';
+
 
 interface ConfirmationModalProps {
     message: string;

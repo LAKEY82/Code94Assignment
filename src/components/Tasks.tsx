@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { SearchNormal1, HambergerMenu, RecordCircle, Add, Calendar, Clock } from 'iconsax-react';
 import logo from '../assets/img.png';
 import user1Image from '../assets/user.png'; // Replace with your actual image path
